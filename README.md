@@ -1,40 +1,33 @@
-# Space Invaders - Multiprocess Version (C/Linux)
+# C-Linux-Parallel-Games
 
-This version of the game implements a **Multiprocessing** architecture using Linux system calls to manage game logic, entities, and real-time rendering.
+A collection of two implementations of the same arcade game developed in **C** for **Linux**. This repository demonstrates two different low-level concurrency paradigms: **Multiprocessing** and **Multithreading**.
 
-## 🏗️ Architecture
+## 📂 Repository Structure
 
-The project is structured as a tree of independent processes communicating through System V primitives:
+The project is divided into two main directories, each containing its own source code and Makefile:
 
-* [cite_start]**Main Process (Parent):** Initializes the `ncurses` window, creates the **Pipe**, and runs the main rendering loop (`gestione_area_gioco`)[cite: 3].
-* [cite_start]**Alien Process:** Manages horizontal movement and spawns child processes for bullets using `fork()`[cite: 2].
-* [cite_start]**Defense Process:** Handles keyboard input (arrows/space) and creates laser processes[cite: 3].
-* [cite_start]**Bullet/Laser Processes:** Independent tasks that calculate their own trajectories and send updates to the parent[cite: 2, 3].
+### 1. [Multiprocess Version](./multiprocess_version/)
+* [cite_start]**Core Logic:** Uses `fork()` to create independent processes for game entities (aliens, defenses, bullets). [cite: 2, 3]
+* [cite_start]**Communication:** Implements **IPC (Inter-Process Communication)** via a unidirectional `pipe()`. [cite: 2, 3]
+* [cite_start]**Signals:** Uses `kill()` to manage collisions and process termination. [cite: 2, 3]
 
-## 🛠️ Technical Details
+### 2. [Multithread Version](./multithread_version/)
+* [cite_start]**Core Logic:** Uses the `pthread` library to run game entities as threads within a single process. [cite: 1]
+* [cite_start]**Synchronization:** Implements a **Producer-Consumer** pattern with a circular buffer. [cite: 1]
+* [cite_start]**Primitives:** Uses `pthread_mutex_t` for mutual exclusion and `sem_t` (semaphores) for flow control. [cite: 1]
 
-* [cite_start]**IPC (Inter-Process Communication):** Uses a unidirectional **Pipe** to send `Message` structures from children to the parent[cite: 3].
-* [cite_start]**Process Management:** * `fork()` for dynamic entity creation[cite: 2, 3].
-    * [cite_start]`waitpid()` with `WNOHANG` flag to monitor bullet termination without blocking the game flow[cite: 2, 3].
-    * [cite_start]`kill()` signals to handle collisions and cleanup child processes upon game exit[cite: 3].
-* [cite_start]**Graphics:** Built with the `ncurses` library for terminal-based rendering[cite: 3].
 
-## 🚀 Build and Run
 
-Ensure you have the `ncurses` development library installed on your Linux system.
+## 🛠️ Prerequisites
 
-1.  **Compile the project:**
-    ```bash
-    make
-    ```
-2.  **Run the game:**
-    ```bash
-    ./game
-    ```
-3.  **Clean build files:**
-    ```bash
-    make clean
-    ```
+To compile and run these games, you need a Linux environment with:
+* **GCC** (GNU Compiler Collection)
+* **ncurses** library (for terminal graphics)
+* **pthreads** library (usually included in glibc)
 
----
-[cite_start]**Note:** The collision system detects impacts between bullets and entities, reducing life counters and terminating the respective processes via system signals[cite: 3].
+## 🚀 How to Run
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/C-Linux-Parallel-Games.git](https://github.com/YOUR_USERNAME/C-Linux-Parallel-Games.git)
+   cd C-Linux-Parallel-Games
