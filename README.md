@@ -24,10 +24,3 @@ To compile and run these games, you need a Linux environment with:
 * **GCC** (GNU Compiler Collection)
 * **ncurses** library (for terminal graphics)
 * **pthreads** library (usually included in glibc)
-
-## 🚀 How to Run
-
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/YOUR_USERNAME/C-Linux-Parallel-Games.git](https://github.com/YOUR_USERNAME/C-Linux-Parallel-Games.git)
-   cd C-Linux-Parallel-Games
