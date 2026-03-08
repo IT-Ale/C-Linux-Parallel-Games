@@ -1,27 +1,27 @@
-# Space Invaders - Multiprocess Version (C/Linux)
+# Space Invaders - Multithreaded Version (C/Linux)
 
-This version of the game implements a **Multiprocessing** architecture using Linux system calls to manage game logic, entities, and real-time rendering.
+This version of the game implements a **Multithreading** architecture using the POSIX Threads library (`pthread`) to manage game entities within a shared memory space.
 
 ## 🏗️ Architecture
 
-The project is structured as a tree of independent processes communicating through System V primitives:
+The project follows a **Producer-Consumer** pattern to handle game updates:
 
-* [cite_start]**Main Process (Parent):** Initializes the `ncurses` window, creates the **Pipe**, and runs the main rendering loop (`gestione_area_gioco`)[cite: 3].
-* [cite_start]**Alien Process:** Manages horizontal movement and spawns child processes for bullets using `fork()`[cite: 2].
-* [cite_start]**Defense Process:** Handles keyboard input (arrows/space) and creates laser processes[cite: 3].
-* [cite_start]**Bullet/Laser Processes:** Independent tasks that calculate their own trajectories and send updates to the parent[cite: 2, 3].
+* **Main Thread:** Initializes the `ncurses` environment and the synchronization primitives (Mutex and Semaphores).
+* **Producers (Entity Threads):** Alien, Defense, and Projectile threads calculate their positions and write updates into a shared circular buffer.
+* **Consumer (Rendering Thread):** Reads from the shared buffer and updates the `ncurses` window in real-time.
 
 ## 🛠️ Technical Details
 
-* [cite_start]**IPC (Inter-Process Communication):** Uses a unidirectional **Pipe** to send `Message` structures from children to the parent[cite: 3].
-* [cite_start]**Process Management:** * `fork()` for dynamic entity creation[cite: 2, 3].
-    * [cite_start]`waitpid()` with `WNOHANG` flag to monitor bullet termination without blocking the game flow[cite: 2, 3].
-    * [cite_start]`kill()` signals to handle collisions and cleanup child processes upon game exit[cite: 3].
-* [cite_start]**Graphics:** Built with the `ncurses` library for terminal-based rendering[cite: 3].
+* **Synchronization:** * **Mutex (`pthread_mutex_t`):** Protects the critical section during buffer access to prevent race conditions.
+    * **Semaphores (`sem_t`):** Manages the "Empty" and "Full" states of the circular buffer to coordinate producers and consumers.
+* **Shared Memory:** Unlike the process version, all threads share the same address space, making data exchange faster but requiring careful locking.
+* **Graphics:** Uses the `ncurses` library for terminal-based UI and input handling.
+
+
 
 ## 🚀 Build and Run
 
-Ensure you have the `ncurses` development library installed on your Linux system.
+Ensure you have the `ncurses` development library installed.
 
 1.  **Compile the project:**
     ```bash
@@ -37,4 +37,4 @@ Ensure you have the `ncurses` development library installed on your Linux system
     ```
 
 ---
-[cite_start]**Note:** The collision system detects impacts between bullets and entities, reducing life counters and terminating the respective processes via system signals[cite: 3].
+**Note:** Proper cleanup is handled via `pthread_mutex_destroy` and `sem_destroy` to ensure no system resources are leaked upon exit.
