@@ -22,5 +22,17 @@ The project is structured as a tree of independent processes communicating throu
 
 ## 🚀 Build and Run
 
-Ensure you have the `ncurses` development library installed on your Linux system.
+Ensure you have the `ncurses` development library installed.
 
+1.  **Compile the project:**
+    ```bash
+    make
+    ```
+2.  **Run the game:**
+    ```bash
+    ./game
+    ```
+3.  **Clean build files:**
+    ```bash
+    make clean
+    ```
